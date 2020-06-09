@@ -1,4 +1,4 @@
-Portal-using-rest-api
+ATM
 =============
 
 
@@ -30,7 +30,7 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
 1. Run the following git clone (specify a directory of your choosing if you like):
 
-        git clone https://github.com/jindalpawan/Portal-using-rest-api
+        git clone https://github.com/jindalpawan/ATM
 
 2. Run virtualenv on the git cloned directory to setup the Python virtual environment:
 
@@ -42,7 +42,7 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
 4. After activating the virtual environment, install the dependencies
 
-        pip install -r requirements.txt
+        pip install -r requirement.txt
 
 5. You are all set. Run the migrate command
 
