@@ -39,12 +39,13 @@ class Deposite(APIView):
 			n500=n500+data["n500"]
 			n200=n200+data["n200"]
 			n100=n100+data["n100"]
-			dic={'msg':"success"}
+			dic={'Error':"success"}
 		else:
 			dic={'Error':"amount should be multiple by 100"}
 		return Response(dic)
 
 
+#Withdraw money
 class Withdraw(APIView):
 	permission_classes = (IsAuthenticated,)
 	def post(self, request):
@@ -54,42 +55,43 @@ class Withdraw(APIView):
 		user=request.user
 		dic={}
 		if amount>20000:
-			dic["msg"]="Not enough cash in your account"
+			dic["Error"]="Not enough cash in your account"
 		else:
 			if user.balance>=amount:
 				if AtmAmount>=amount:
 					if amount%100==0:
 						user.balance=user.balance- amount
 						
-						if amount>=(2000*n2000):
+						#couunt how many notes of 20000 will require
+						if n2000:
 							x=amount/2000
 							n2000=n2000-x
-							amount=amount-(x*2000)
+							amount=amount%2000
 							dic["n2000"]=x
 
 						if amount>=(500*n500):
 							x=amount/500
 							n500=n500-x
-							amount=amount-(x*500)
+							amount=amount%500
 							dic["n500"]=x
 
 						if amount>=(200*n200):
 							x=amount/200
 							n200=n200-x
-							amount=amount-(x*200)
+							amount=amount%200
 							dic["n200"]=x
 
 						if amount>=(100*n100):
 							x=amount/100
 							n100=n100-x
-							amount=amount-(x*100)
+							amount=amount%100
 							dic["n100"]=x
 					else:
 						dic["Error"]="Amount shuold be multiple of Rs100"
 				else:
 					dic["Error"]="Not enough cash in ATM"
 			else:
-				dic["msg"]="Not enough cash in your account"	
+				dic["Error"]="Not enough cash in your account"	
 
 		return Response(dic)
 
