@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from . import serializers
-from .models import Account
+from .models import Account, Transaction
 from rest_framework.views import APIView
 from .utils import get_and_authenticate_user
 from rest_framework import viewsets
@@ -26,7 +26,7 @@ AtmAmount=0  # current amount in the ATM
 
 # Deposite amount in the Account
 class Deposite(APIView):	
-	permission_classes = (IsAuthenticated,) 
+	#permission_classes = (IsAuthenticated,) 
 	def get(self, request):
 		#only authenticate user can access
 		data=json.dumps(request.data)
@@ -41,7 +41,10 @@ class Deposite(APIView):
 			n500=n500+data["n500"]
 			n200=n200+data["n200"]
 			n100=n100+data["n100"]
+			t=Transaction(user= user, amount=amount, types= "deposite")
+			t.save()
 			dic={'success':"success"}
+
 		else:
 			dic={'Error':"amount should be multiple by 100"}
 		return Response(dic)
@@ -49,7 +52,7 @@ class Deposite(APIView):
 
 #Withdraw money
 class Withdraw(APIView):
-	permission_classes = (IsAuthenticated,)
+	#permission_classes = (IsAuthenticated,)
 	def post(self, request):
 		data=json.dumps(request.data)
 		data=json.loads(data)
@@ -64,7 +67,8 @@ class Withdraw(APIView):
 					if amount%100==0: # check amount multiple of 100 or not
 						user.balance=user.balance- amount
 						AtmAmount=AtmAmount-amount
-
+						t=Transaction(user= user, amount=amount, types= "withdraw")
+						t.save()
 						#if 2000 notes in the ATM then withdraw
 						if n2000:
 							x=amount/2000
@@ -123,8 +127,29 @@ class Withdraw(APIView):
 		return Response(dic)
 
 
-class AuthViewSet(viewsets.ViewSet):
 
+#check balance api 
+class CheckBalance(APIView):	
+	permission_classes = (IsAuthenticated,) 
+	def get(self, request):
+		user= request.user
+		dic={'Current_Balance': user.balance}
+		# send back only current amount
+		return Response(dic)
+
+
+class LastFiveTransaction(APIView):	
+	permission_classes = (IsAuthenticated,) 
+	def get(self, request):
+		user= request.user
+		t=Transaction.objects.filter(user=request.user).order_by('-time')[:5]
+		dic={'tramsactions': t}
+		# send back only last 5 transaction
+		return Response(dic)
+
+
+
+class AuthViewSet(viewsets.ViewSet):
 	permission_classes = [AllowAny, ]
 	
 	@action(methods=['POST', ], detail=False)
