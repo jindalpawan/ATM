@@ -38,7 +38,7 @@ Note: Ubuntu 16.04 LTS is recommended to use for the development environment.
 
 3. cd into the name of the directory into which you cloned the git repository
 
-        cd portaldrf
+        cd atm
 
 4. After activating the virtual environment, install the dependencies
 
